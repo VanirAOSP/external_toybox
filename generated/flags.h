@@ -345,9 +345,9 @@
 #undef FLAG_m
 #endif
 
-// crond   fbSl#<0=8d#<0L:c:[-bf][-LS][-ld]
+// crond fbSl#<0=8d#<0L:c:[-bf][-LS][-ld] fbSl#<0=8d#<0L:c:[-bf][-LS][-ld]
 #undef OPTSTR_crond
-#define OPTSTR_crond  0 
+#define OPTSTR_crond "fbSl#<0=8d#<0L:c:[-bf][-LS][-ld]"
 #ifdef CLEANUP_crond
 #undef CLEANUP_crond
 #undef FOR_crond
@@ -3149,13 +3149,13 @@
 #ifndef TT
 #define TT this.crond
 #endif
-#define FLAG_c (FORCED_FLAG<<0)
-#define FLAG_L (FORCED_FLAG<<1)
-#define FLAG_d (FORCED_FLAG<<2)
-#define FLAG_l (FORCED_FLAG<<3)
-#define FLAG_S (FORCED_FLAG<<4)
-#define FLAG_b (FORCED_FLAG<<5)
-#define FLAG_f (FORCED_FLAG<<6)
+#define FLAG_c (1<<0)
+#define FLAG_L (1<<1)
+#define FLAG_d (1<<2)
+#define FLAG_l (1<<3)
+#define FLAG_S (1<<4)
+#define FLAG_b (1<<5)
+#define FLAG_f (1<<6)
 #endif
 
 #ifdef FOR_crontab

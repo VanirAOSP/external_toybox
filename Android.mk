@@ -153,6 +153,7 @@ LOCAL_SRC_FILES := \
     toys/other/xxd.c \
     toys/other/yes.c \
     toys/pending/arp.c \
+    toys/pending/crond.c \
     toys/pending/dd.c \
     toys/pending/diff.c \
     toys/pending/expr.c \
