@@ -216,8 +216,8 @@
 #define USE_ZCAT(...)
 #define CFG_GUNZIP 0
 #define USE_GUNZIP(...)
-#define CFG_CROND 1
-#define USE_CROND(...) __VA_ARGS__
+#define CFG_CROND 0
+#define USE_CROND(...)
 #define CFG_CRONTAB 0
 #define USE_CRONTAB(...)
 #define CFG_DD 1
