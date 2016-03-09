@@ -14,6 +14,8 @@
 #define USE_TOYBOX_ON_ANDROID(...) __VA_ARGS__
 #define CFG_TOYBOX_FORK 1
 #define USE_TOYBOX_FORK(...) __VA_ARGS__
+#define CFG_TOYBOX_PRLIMIT 1
+#define USE_TOYBOX_PRLIMIT(...) __VA_ARGS__
 #define CFG_BASENAME 1
 #define USE_BASENAME(...) __VA_ARGS__
 #define CFG_CAL 1
@@ -124,8 +126,18 @@
 #define USE_PRINTF(...) __VA_ARGS__
 #define CFG_PS 1
 #define USE_PS(...) __VA_ARGS__
-#define CFG_TTOP 0
-#define USE_TTOP(...)
+#define CFG_TOP 1
+#define USE_TOP(...) __VA_ARGS__
+#define CFG_IOTOP 1
+#define USE_IOTOP(...) __VA_ARGS__
+#define CFG_TOP_COMMON 1
+#define USE_TOP_COMMON(...) __VA_ARGS__
+#define CFG_PGREP 1
+#define USE_PGREP(...) __VA_ARGS__
+#define CFG_PGKILL_COMMON 1
+#define USE_PGKILL_COMMON(...) __VA_ARGS__
+#define CFG_PKILL 1
+#define USE_PKILL(...) __VA_ARGS__
 #define CFG_PWD 1
 #define USE_PWD(...) __VA_ARGS__
 #define CFG_RENICE 1
@@ -164,6 +176,8 @@
 #define USE_TRUE(...) __VA_ARGS__
 #define CFG_TTY 1
 #define USE_TTY(...) __VA_ARGS__
+#define CFG_ULIMIT 1
+#define USE_ULIMIT(...) __VA_ARGS__
 #define CFG_UNAME 1
 #define USE_UNAME(...) __VA_ARGS__
 #define CFG_UNIQ 1
@@ -174,8 +188,6 @@
 #define USE_UUDECODE(...)
 #define CFG_UUENCODE 0
 #define USE_UUENCODE(...)
-#define CFG_VI 0
-#define USE_VI(...)
 #define CFG_WC 1
 #define USE_WC(...) __VA_ARGS__
 #define CFG_WHO 0
@@ -226,6 +238,8 @@
 #define USE_EXPR(...) __VA_ARGS__
 #define CFG_FDISK 1
 #define USE_FDISK(...) __VA_ARGS__
+#define CFG_FILE 1
+#define USE_FILE(...) __VA_ARGS__
 #define CFG_FOLD 0
 #define USE_FOLD(...)
 #define CFG_FSCK 0
@@ -244,8 +258,6 @@
 #define USE_ICONV(...)
 #define CFG_INIT 0
 #define USE_INIT(...)
-#define CFG_IOTOP 0
-#define USE_IOTOP(...)
 #define CFG_IP 0
 #define USE_IP(...)
 #define CFG_IPCRM 0
@@ -286,10 +298,6 @@
 #define USE_OPENVT(...)
 #define CFG_DEALLOCVT 0
 #define USE_DEALLOCVT(...)
-#define CFG_PGREP 1
-#define USE_PGREP(...) __VA_ARGS__
-#define CFG_PKILL 1
-#define USE_PKILL(...) __VA_ARGS__
 #define CFG_PING 0
 #define USE_PING(...)
 #define CFG_RESIZE 1
@@ -320,8 +328,6 @@
 #define USE_TFTP(...)
 #define CFG_TFTPD 0
 #define USE_TFTPD(...)
-#define CFG_TOP 1
-#define USE_TOP(...) __VA_ARGS__
 #define CFG_TRACEROUTE 1
 #define USE_TRACEROUTE(...) __VA_ARGS__
 #define CFG_TR 1
@@ -330,8 +336,12 @@
 #define USE_USERADD(...)
 #define CFG_USERDEL 0
 #define USE_USERDEL(...)
+#define CFG_VI 0
+#define USE_VI(...)
 #define CFG_WATCH 1
 #define USE_WATCH(...) __VA_ARGS__
+#define CFG_WGET 0
+#define USE_WGET(...)
 #define CFG_XZCAT 1
 #define USE_XZCAT(...) __VA_ARGS__
 #define CFG_ACPI 1
@@ -408,10 +418,10 @@
 #define USE_CHATTR(...) __VA_ARGS__
 #define CFG_LSMOD 1
 #define USE_LSMOD(...) __VA_ARGS__
-#define CFG_LSPCI 0
-#define USE_LSPCI(...)
-#define CFG_LSPCI_TEXT 0
-#define USE_LSPCI_TEXT(...)
+#define CFG_LSPCI 1
+#define USE_LSPCI(...) __VA_ARGS__
+#define CFG_LSPCI_TEXT 1
+#define USE_LSPCI_TEXT(...) __VA_ARGS__
 #define CFG_LSUSB 1
 #define USE_LSUSB(...) __VA_ARGS__
 #define CFG_MAKEDEVS 1
@@ -526,6 +536,8 @@
 #define USE_MOUNT(...) __VA_ARGS__
 #define CFG_PASSWD 0
 #define USE_PASSWD(...)
+#define CFG_PASSWD_SAD 0
+#define USE_PASSWD_SAD(...)
 #define CFG_PIDOF 1
 #define USE_PIDOF(...) __VA_ARGS__
 #define CFG_SEQ 1
