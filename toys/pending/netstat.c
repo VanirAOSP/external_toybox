@@ -375,6 +375,9 @@ static long ss_inode(char *link)
 {
   long inode = -1;
   //"link = socket:[12345]", get "12345" as inode.
+  if (link == NULL)
+    return -1;
+
   if (!strncmp(link, "socket:[", sizeof("socket:[")-1)) {
     inode = get_strtou(link + sizeof("socket:[")-1, (char**)&link, 0);
     if (*link != ']') inode = -1;
@@ -440,7 +443,7 @@ static void scan_pid(int pid)
 
   if ((p = strchr(line, ' '))) *p = 0; // "/bin/netstat -ntp" -> "/bin/netstat"
   snprintf(TT.current_name, sizeof(TT.current_name), "%d/%s",
-           pid, basename_r(line)); // "584/netstat"
+           pid, getbasename(line)); // "584/netstat"
   free(line);
 
   fd_dir = xmprintf("/proc/%d/fd", pid);
