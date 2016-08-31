@@ -237,6 +237,8 @@ LOCAL_SRC_FILES := \
 LOCAL_CFLAGS := $(common_cflags)
 LOCAL_CLANG := true
 
+LOCAL_STATIC_LIBRARIES := libselinux
+
 # This doesn't actually prevent us from dragging in libc++ at runtime
 # because libnetd_client.so is C++.
 LOCAL_CXX_STL := none
@@ -282,21 +284,19 @@ TOYS_WITHOUT_LINKS := blkid traceroute6
 
 include $(BUILD_EXECUTABLE)
 
-toybox_links: $(TOYBOX_INSTLIST) toybox
-toybox_links: TOY_LIST=$(shell $(TOYBOX_INSTLIST))
+toybox_links: $(TOYBOX_INSTLIST)
 toybox_links: TOYBOX_BINARY := $(TARGET_OUT)/bin/toybox
 toybox_links:
-	@echo -e ${CL_CYN}"Generate Toybox links:"${CL_RST} $(TOY_LIST)
-	@mkdir -p $(TARGET_OUT)/bin
-	@mkdir -p $(TARGET_OUT)/xbin
-	$(hide) $(foreach t,$(filter-out $(TOYS_FOR_XBIN) $(TOYS_WITHOUT_LINKS),$(TOY_LIST)),ln -sf toybox $(TARGET_OUT_EXECUTABLES)/$(t);)
-	$(hide) $(foreach t,$(TOYS_FOR_XBIN),ln -sf /system/bin/toybox $(TARGET_OUT_OPTIONAL_EXECUTABLES)/$(t);)
+	@echo -e ${CL_CYN}"Generate Toybox links:"${CL_RST} $$($(TOYBOX_INSTLIST))
+	@mkdir -p $(TARGET_OUT_EXECUTABLES) $(TARGET_OUT_OPTIONAL_EXECUTABLES)
+	$(hide) $(TOYBOX_INSTLIST) | grep -vFx -f <(tr ' ' '\n' <<< '$(TOYS_FOR_XBIN) $(TOYS_WITHOUT_LINKS)') | xargs -I'{}' ln -sf toybox '$(TARGET_OUT_EXECUTABLES)/{}'
+	$(hide) tr ' ' '\n' <<< '$(TOYS_FOR_XBIN)' | xargs -I'{}' ln -sf ../bin/toybox '$(TARGET_OUT_OPTIONAL_EXECUTABLES)/{}'
 
 
 # This is used by the recovery system
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := main.c
-LOCAL_WHOLE_STATIC_LIBRARIES := libtoybox
+LOCAL_WHOLE_STATIC_LIBRARIES := libselinux libtoybox
 LOCAL_CFLAGS := $(common_cflags)
 LOCAL_CFLAGS += -Dmain=toybox_driver
 LOCAL_CXX_STL := none
@@ -316,6 +316,7 @@ LOCAL_MODULE_CLASS := UTILITY_EXECUTABLES
 LOCAL_MODULE_PATH := $(PRODUCT_OUT)/utilities
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_STEM := toybox
+LOCAL_PACK_MODULE_RELOCATIONS := false
 LOCAL_STATIC_LIBRARIES := libc libtoybox libcutils libselinux libmincrypt liblog
 LOCAL_FORCE_STATIC_EXECUTABLE := true
 include $(BUILD_EXECUTABLE)
