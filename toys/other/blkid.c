@@ -57,24 +57,6 @@ static const struct fstype fstypes[] = {
   {"vfat", 0x31544146, 4, 54, 39+(4<<24), 11, 43}     // fat1
 };
 
-static const char *vfat_empty   = "           ";
-static const char *vfat_no_name = "NO NAME    ";
-
-static int valid_label(int i, int off)
-{
-  int label_len = fstypes[i].label_len;
-  const char *label = toybuf + fstypes[i].label_off - off;
-
-  if (!strcmp(fstypes[i].name, "vfat")) {
-    if (!memcmp(label, vfat_empty, label_len))
-      return 0;
-    if (!memcmp(label, vfat_no_name, label_len))
-      return 0;
-    return 1;
-  }
-  return 1;
-}
-
 static void do_blkid(int fd, char *name)
 {
   int off, i, j, len;
@@ -117,7 +99,7 @@ static void do_blkid(int fd, char *name)
 
   // distinguish ext2/3/4
   type = fstypes[i].name;
-  if (!strcmp(type, "ext2")) {
+  if (!i) {
     if (toybuf[1116]&4) type = "ext3";
     if (toybuf[1120]&64) type = "ext4";
   }

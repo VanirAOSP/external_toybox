@@ -634,16 +634,24 @@ int copy_tempfile(int fdin, char *name, char **tempname)
 {
   struct stat statbuf;
   int fd;
+  int ignored __attribute__((__unused__));
 
   *tempname = xmprintf("%s%s", name, "XXXXXX");
   if(-1 == (fd = mkstemp(*tempname))) error_exit("no temp file");
   if (!tempfile2zap) sigatexit(tempfile_handler);
   tempfile2zap = *tempname;
 
-  // Set permissions of output file
+  // Set permissions of output file (ignoring errors, usually due to nonroot)
 
   fstat(fdin, &statbuf);
   fchmod(fd, statbuf.st_mode);
+
+  // We chmod before chown, which strips the suid bit. Caller has to explicitly
+  // switch it back on if they want to keep suid.
+
+  // Suppress warn-unused-result. Both gcc and clang clutch their pearls about
+  // this but it's _supposed_ to fail when we're not root.
+  ignored = fchown(fd, statbuf.st_uid, statbuf.st_gid);
 
   return fd;
 }

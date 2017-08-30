@@ -39,13 +39,6 @@ struct skeleton_data {
   int more_globals;
 };
 
-// toys/lsb/dmesg.c
-
-struct dmesg_data {
-  long level;
-  long size;
-};
-
 // toys/lsb/hostname.c
 
 struct hostname_data {
@@ -139,10 +132,29 @@ struct umount_data {
   char *types;
 };
 
+// toys/net/ftpget.c
+
+struct ftpget_data {
+  char *user;
+  char *port;
+  char *password;
+
+  int fd;
+};
+
 // toys/net/ifconfig.c
 
 struct ifconfig_data {
   int sockfd;
+};
+
+// toys/net/microcom.c
+
+struct microcom_data {
+  char *s;
+
+  int fd;
+  struct termios original_stdin_state, original_fd_state;
 };
 
 // toys/net/netcat.c
@@ -152,6 +164,7 @@ struct netcat_data {
   long quit_delay;       // -q Exit after EOF from stdin after # seconds.
   char *source_address;  // -s Bind to a specific source address.
   long port;             // -p Bind to a specific source port.
+  long idle;             // -W Wait # seconds for more data
   long wait;             // -w Wait # seconds for a connection.
 };
 
@@ -198,6 +211,7 @@ struct dos2unix_data {
 // toys/other/fallocate.c
 
 struct fallocate_data {
+  long offset;
   long size;
 };
 
@@ -314,12 +328,6 @@ struct nsenter_data {
 
 struct oneit_data {
   char *console;
-};
-
-// toys/other/setfattr.c
-
-struct setfattr_data {
-  char *x, *v, *n;
 };
 
 // toys/other/shred.c
@@ -541,6 +549,15 @@ struct diff_data {
   int *offset[2];
 };
 
+// toys/pending/dmesg.c
+
+struct dmesg_data {
+  long level;
+  long size;
+
+  int color;
+};
+
 // toys/pending/dumpleases.c
 
 struct dumpleases_data {
@@ -584,19 +601,6 @@ struct fsck_data {
   int nr_run;
   int sig_num;
   long max_nr_run;
-};
-
-// toys/pending/ftpget.c
-
-struct ftpget_data {
-  long port; //  char *port;
-  char *password;
-  char *username;
-
-  FILE *sockfp;
-  int c;
-  int isget;
-  char buf[sizeof(struct sockaddr_storage)];
 };
 
 // toys/pending/getfattr.c
@@ -735,12 +739,13 @@ struct mke2fs_data {
 // toys/pending/modprobe.c
 
 struct modprobe_data {
+  struct arg_list *dirs;
+
   struct arg_list *probes;
   struct arg_list *dbase[256];
   char *cmdopts;
   int nudeps;
   uint8_t symreq;
-  void (*dbg)(char *format, ...);
 };
 
 // toys/pending/more.c
@@ -773,6 +778,12 @@ struct ping_data {
 
 struct route_data {
   char *family;
+};
+
+// toys/pending/setfattr.c
+
+struct setfattr_data {
+  char *x, *v, *n;
 };
 
 // toys/pending/sh.c
@@ -1181,7 +1192,9 @@ struct od_data {
 // toys/posix/paste.c
 
 struct paste_data {
-  char *delim;
+  char *d;
+
+  int files;
 };
 
 // toys/posix/patch.c
@@ -1242,9 +1255,7 @@ struct ps_data {
     } pgrep;
   };
 
-#ifndef __APPLE__
   struct sysinfo si;
-#endif
   struct ptr_len gg, GG, pp, PP, ss, tt, uu, UU;
   struct dirtree *threadparent;
   unsigned width, height;
@@ -1375,7 +1386,6 @@ extern union global_union {
 	struct log_data log;
 	struct hello_data hello;
 	struct skeleton_data skeleton;
-	struct dmesg_data dmesg;
 	struct hostname_data hostname;
 	struct killall_data killall;
 	struct md5sum_data md5sum;
@@ -1387,7 +1397,9 @@ extern union global_union {
 	struct seq_data seq;
 	struct su_data su;
 	struct umount_data umount;
+	struct ftpget_data ftpget;
 	struct ifconfig_data ifconfig;
+	struct microcom_data microcom;
 	struct netcat_data netcat;
 	struct netstat_data netstat;
 	struct tunctl_data tunctl;
@@ -1410,7 +1422,6 @@ extern union global_union {
 	struct modinfo_data modinfo;
 	struct nsenter_data nsenter;
 	struct oneit_data oneit;
-	struct setfattr_data setfattr;
 	struct shred_data shred;
 	struct stat_data stat;
 	struct swapon_data swapon;
@@ -1431,12 +1442,12 @@ extern union global_union {
 	struct dhcp6_data dhcp6;
 	struct dhcpd_data dhcpd;
 	struct diff_data diff;
+	struct dmesg_data dmesg;
 	struct dumpleases_data dumpleases;
 	struct expr_data expr;
 	struct fdisk_data fdisk;
 	struct fold_data fold;
 	struct fsck_data fsck;
-	struct ftpget_data ftpget;
 	struct getfattr_data getfattr;
 	struct getty_data getty;
 	struct groupadd_data groupadd;
@@ -1455,6 +1466,7 @@ extern union global_union {
 	struct openvt_data openvt;
 	struct ping_data ping;
 	struct route_data route;
+	struct setfattr_data setfattr;
 	struct sh_data sh;
 	struct sulogin_data sulogin;
 	struct syslogd_data syslogd;

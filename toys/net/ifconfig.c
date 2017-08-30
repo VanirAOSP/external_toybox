@@ -58,7 +58,7 @@ GLOBALS(
 
 // Convert hostname to binary address for AF_INET or AF_INET6
 // return /prefix (or range max if none)
-int get_addrinfo(char *host, sa_family_t af, void *addr)
+static int get_addrinfo(char *host, sa_family_t af, void *addr)
 {
   struct addrinfo hints, *result, *rp = 0;
   int status, len;
@@ -125,6 +125,9 @@ static void display_ifconfig(char *name, int always, unsigned long long val[])
     xprintf("HWaddr ");
     for (i=0; i<6; i++) xprintf(":%02x"+!i, ifre.ifr_hwaddr.sa_data[i]);
   }
+  sprintf(toybuf, "/sys/class/net/%.15s/device/driver", name);
+  if (readlink0(toybuf, toybuf, sizeof(toybuf))>0 && (pp = strrchr(toybuf, '/')))
+    xprintf("  Driver %s", pp+1);
   xputc('\n');
 
   // If an address is assigned record that.

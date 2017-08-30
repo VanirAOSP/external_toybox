@@ -196,7 +196,6 @@ static void mount_filesystem(char *dev, char *dir, char *type,
     if (toys.optflags & FLAG_v)
       printf("try '%s' type '%s' on '%s'\n", dev, type, dir);
     for (;;) {
-      errno = 0;
       rc = mount(dev, dir, type, flags, opts);
       // Did we succeed, fail unrecoverably, or already try read-only?
       if (!rc || (errno != EACCES && errno != EROFS) || (flags&MS_RDONLY))
@@ -311,6 +310,7 @@ void mount_main(void)
 
     for (mm = remount ? remount : mtl; mm; mm = (remount ? mm->prev : mm->next))
     {
+      char *aopts = 0;
       struct mtab_list *mmm = 0;
       int aflags, noauto, len;
 
@@ -342,20 +342,13 @@ void mount_main(void)
  
       // user only counts from fstab, not opts.
       if (!mmm) {
-        char *aopts = 0;
         TT.okuser = comma_scan(mm->opts, "user", 1);
         aflags = flag_opts(mm->opts, flags, &aopts);
         aflags = flag_opts(opts, aflags, &aopts);
-        if (remount) {
-            // clear type and opts for remount
-            aflags |= MS_REMOUNT;
-            strcpy(mm->type, "none");
-            aopts = NULL;
-        }
+
         mount_filesystem(mm->device, mm->dir, mm->type, aflags, aopts);
-        free(aopts);
-        if (!remount && errno == EINVAL) continue;
       } // TODO else if (getuid()) error_msg("already there") ?
+      free(aopts);
 
       if (!(toys.optflags & FLAG_a)) break;
     }

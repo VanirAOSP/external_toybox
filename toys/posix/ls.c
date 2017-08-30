@@ -5,7 +5,7 @@
  *
  * See http://opengroup.org/onlinepubs/9699919799/utilities/ls.html
 
-USE_LS(NEWTOY(ls, USE_LS_COLOR("(color):;")"ZgoACFHLRSabcdfhiklmnpqrstux1[-Cxm1][-Cxml][-Cxmo][-Cxmg][-cu][-ftS][-HL][!qb]", TOYFLAG_BIN|TOYFLAG_LOCALE))
+USE_LS(NEWTOY(ls, USE_LS_COLOR("(color):;")"(show-control-chars)ZgoACFHLRSabcdfhiklmnpqrstux1[-Cxm1][-Cxml][-Cxmo][-Cxmg][-cu][-ftS][-HL][!qb]", TOYFLAG_BIN|TOYFLAG_LOCALE))
 
 config LS
   bool "ls"
@@ -65,7 +65,7 @@ GLOBALS(
 )
 
 // Callback from crunch_str to represent unprintable chars
-int crunch_qb(FILE *out, int cols, int wc)
+static int crunch_qb(FILE *out, int cols, int wc)
 {
   unsigned len = 1;
   char buf[32];
@@ -98,15 +98,10 @@ int crunch_qb(FILE *out, int cols, int wc)
 }
 
 // Returns wcwidth(utf8) version of strlen with -qb escapes
-int strwidth(char *s)
+static int strwidth(char *s)
 {
   return crunch_str(&s, INT_MAX, 0, TT.escmore, crunch_qb);
 }
-
-void qbstr(char *s, int width)
-{
-  draw_trim_esc(s, width, abs(width), TT.escmore, crunch_qb);
-} 
 
 static char endtype(struct stat *st)
 {
@@ -272,7 +267,7 @@ static unsigned long next_column(unsigned long ul, unsigned long dtlen,
   return (*xpos*height) + widecols + (ul/(columns-1));
 }
 
-int color_from_mode(mode_t mode)
+static int color_from_mode(mode_t mode)
 {
   int color = 0;
 
@@ -323,7 +318,7 @@ static void listfiles(int dirfd, struct dirtree *indir)
     if (flags == (FLAG_1|FLAG_f)) return;
   // Read directory contents. We dup() the fd because this will close it.
   // This reads/saves contents to display later, except for in "ls -1f" mode.
-  } else  dirtree_recurse(indir, filter, dup(dirfd),
+  } else dirtree_recurse(indir, filter, dup(dirfd),
       DIRTREE_SYMFOLLOW*!!(flags&FLAG_L));
 
   // Copy linked list to array and sort it. Directories go in array because
@@ -534,12 +529,15 @@ void ls_main(void)
   if (toys.optflags&FLAG_b) TT.escmore = " \\";
 
   // Do we have an implied -1
-  if (!isatty(1)) {
+  if (isatty(1)) {
+    if (!(toys.optflags&FLAG_show_control_chars)) toys.optflags |= FLAG_q;
+    if (toys.optflags&(FLAG_l|FLAG_o|FLAG_n|FLAG_g)) toys.optflags |= FLAG_1;
+    else if (!(toys.optflags&(FLAG_1|FLAG_x|FLAG_m))) toys.optflags |= FLAG_C;
+  } else {
     if (!(toys.optflags & FLAG_m)) toys.optflags |= FLAG_1;
     if (TT.color) toys.optflags ^= FLAG_color;
-  } else if (toys.optflags&(FLAG_l|FLAG_o|FLAG_n|FLAG_g))
-    toys.optflags |= FLAG_1;
-  else if (!(toys.optflags&(FLAG_1|FLAG_x|FLAG_m))) toys.optflags |= FLAG_C;
+  }
+
   // The optflags parsing infrastructure should really do this for us,
   // but currently it has "switch off when this is set", so "-dR" and "-Rd"
   // behave differently
